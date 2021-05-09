@@ -1,0 +1,1051 @@
+
+class GameWorld{
+  constructor(seller, buyer, name, options, currency, initialGold) {
+      this.name = name
+      this.seller = seller
+      this.buyer = buyer
+      this.options = options
+      this.currency = currency
+      this.initialGold = initialGold
+      
+           
+      this.Weapons = [
+          {
+             name: "Sword",
+             sellPrice: 8,
+             buyPrice: 6, 
+             damage: 7
+         },
+         {
+             name: "Axe",
+             sellPrice: 11,
+             buyPrice: 15,
+             damage: 20
+         },
+         {
+             name: "Bow",
+             sellPrice: 18,
+             buyPrice: 21,
+             damage: 10
+         },
+          {
+             name: "Dagger",
+             sellPrice: 7,
+             buyPrice: 5,
+             damage: 5
+         },
+         {
+            name:"Spear",
+            sellPrice: 12,
+            buyPrice: 10,
+            damage : 15
+         },
+         {
+             name: "Mace",
+             sellPrice: 12,
+             buyPrice: 11,
+             damage : 13
+  
+         }]
+     this.Armor=[
+        {
+             name: "Shield",
+             sellPrice: 12,
+             buyPrice:10,
+             block: 8
+         },
+         {
+             name: "Helmet",
+             sellPrice:8,
+             buyPrice: 6,
+             block: 4
+         },
+         {
+             name: "Armor",
+             sellPrice:20,
+             buyPrice:15,
+             block:14
+         },
+     
+         {
+             name: "fireStaff",
+             sellPrice: 35,
+             buyPrice: 20,
+             damage: 40
+         },
+         {
+             name:"Health Potion",
+             sellPrice:10,
+             buyPrice: 5,
+             hpRestored: 30
+         },
+         {
+             name: "Strength Potion",
+             sellPrice:12,
+             buyPrice: 5,
+             strIncrease: 10
+         }]
+  
+      }}   
+  
+  
+  
+  game = new GameWorld()
+  
+  
+  class warrior {
+      constructor(name, hp =100, agl= 70, str= 70, sta= 70, int= 70, power = 10, wallet =100,){
+      this.name = name    
+      this.hp = hp
+      this.agl = agl
+      this.str = str
+      this.sta = sta
+      this.int = int
+      this.power = power
+      this.wallet = wallet
+      
+      this.inventory = []
+      
+      
+      }
+      rand(upper, lower){
+        return (Math.round(Math.random()* upper)+ lower);
+    }
+    attack(unit){
+        if(undefined == this.inventory._items[0] ){
+            console.log("Attacking bare handed");
+            this.damage = Math.floor(((this.power + this.str) * (this.sta/100 *this.rand(3,1))))
+        }
+        else{
+            console.log("Attacking with weapon");
+            this.damage = Math.floor((((this.power + this.str) * this.inventory._items[0].damage) * (this.sta/100 *this.rand(3,1))))
+        }
+        unit.hp = unit.hp - this.damage
+       
+        return this.damage
+    }
+    
+    }
+  justin = new warrior("Justin") 
+
+
+  class mage extends warrior{
+    constructor(mp=300, hp=200, agl=68, str=50, sta=50, int= 99, power = 10, name){
+        super( hp, agl, str, sta , int, power, name)
+        this.mp = mp
+        
+        //Setting up the Mage Shop
+        
+
+        
+    }
+    castSpell(defender){
+        this.damage = Math.floor(((this.mp * this.int)*(Math.random()*1 +0.001))/( this.rand(5,10)))
+        defender.hp = defender.hp - this.damage
+        
+        return this.damage
+    }
+    }
+    
+
+
+var Merlin = new mage(500, 300, 73,75,70,100);
+var Grandbob = new mage(1000, 500, 90, 90, 1000);
+
+
+
+
+
+
+class God extends mage{
+    constructor(power, hp, mp, interest, agl, str, sta, int, name){
+        super(hp,agl,str,sta, int, power, name)
+        this.power = power
+        this.hp = hp
+        this.mp = mp
+        this.interest = interest
+    }
+    
+}
+
+Zeus = new God(1000, 10000, 10000, (5/10))
+Hades = new God(666, 10000, 10000, (6/10))
+
+
+
+
+class legion extends warrior{
+    constructor(troops, morale, hp, agl, str, sta, int, power, name){
+        super(hp, agl, str, sta, int, power, name)
+        this.troops = troops
+        this.morale = morale
+        this.platoon = []
+        // static value
+        warrior.names = ['Jane','Jhon',"Mark", "Bryan", "Dean", "Justin", "Mike", "Matthew"]
+    }
+    assembleArmy(){
+        for(let i = 0; i < this.troops; i++){
+            this.platoon.push( new warrior(warrior.names[this.rand(7,0)],this.rand(10,4),this.rand(10,5),this.rand(10,4),this.rand(10,5),this.rand(10,2),0,0, 0))
+        }
+    }
+    calArmy(){
+        this.hp = 0
+        this.power = 0
+        this.sta = 0
+        this.agl = 0
+        this.str = 0
+        this.int = 0
+        for(let i = 0; i< this.platoon.length; i++){
+            this.hp = (this.hp + this.platoon[i].hp);
+            this.power = (this.power + this.platoon[i].power);
+            this.sta = (this.sta + this.platoon[i].sta);
+            this.agl = (this.agl + this.platoon[i].agl);
+            this.str = (this.str + this.platoon[i].str);
+            this.int= (this.int + this.platoon[i].str);
+        }
+        
+    }
+    recieveDamage(damage){
+        this.platoon.sort(compare)
+        this.damage = damage
+        this.troopDam(damage)
+        
+    }
+     troopDam(damage){
+        var troopDamage = damage/ this.platoon.length
+        for(let i=0; i<this.platoon.length; i++){
+            this.platoon.sort(compare)
+            this.platoon[i].hp = Math.floor((this.platoon[i].hp - troopDamage))
+           this.elimTroop()
+        }
+        this.elimTroop()
+    }
+    elimTroop(){
+        for(let i = 0; i<this.platoon.length; i++){
+            this.platoon.sort(compare)
+            if(this.platoon[i].hp <= 0){
+                this.platoon.shift()
+                
+                this.troops = this.troops -1
+                
+            }
+            
+        }
+        
+        this.calArmy()
+        this.zeroLegion()
+    }
+    zeroLegion(){
+        if(this.hp <=0){
+            this.hp = 0
+        }
+    }
+    // las is short for legion attacks swarm
+    las(sForce){
+        sForce.takeDamage(this.attack(sForce))
+    }
+    //lal is short for legion attack legion
+    lal(defender){
+        defender.platoon.sort(compare)
+        for(let i = 0 ; i< this.platoon.length; i++){
+            defender.platoon.sort(compare)
+            this.platoon[i].attack(defender.platoon[this.rand(defender.platoon.length,0)])
+            for(let i = 0 ; i< defender.platoon.length; i++){
+                if(defender.platoon[i].hp<=0){
+                    defender.platoon.sort(compare)
+                    defender.platoon.shift()
+                }
+
+            }
+            for(let i = 0; i<defender.platoon.length;i++){
+                defender.hp = defender.hp + defender.platoon[i].hp
+            }
+
+            
+        }
+        
+    }
+    assult(unit){
+        
+        this.damage = Math.floor(((this.power + this.str + this.agl + this.int) * (this.sta/1000 *this.rand(3,1))))
+        unit.hp = unit.hp - this.damage
+       
+        return this.damage
+    }
+
+}
+
+class monster {
+    constructor(hp = 0, fatigue=0, power=0,kind=""){
+        this.hp = hp
+        this.power = power
+        this.kind = kind
+        this.fatigue = fatigue
+        this.damage = []
+    
+    }
+   
+    rand(upper, lower){
+        return (Math.floor(Math.random()* upper)+ lower);
+    }
+   diffcultyFactor(df){
+       var df
+       if(df == 1){
+           df = df  * 3
+       }
+       if(df == 2){
+           df = df * 4
+       }
+       if(df >2){
+           df = Math.floor(df *(df *.3))
+       }
+    return df 
+   }
+     
+  
+  
+   
+    scare(defender){
+        defender.sta = defender.sta - this.power
+        this.fatigue = this.fatigue + 1
+    
+    }
+    //set up attacks for monster class
+    claw(defender){
+        defender.hp = Math.floor(defender.hp - (this.power/(this.fatigue +1))) 
+        this.damage = (this.power/(this.fatigue +1))
+        this.fatigue = this.fatigue + 2
+        return this.damage
+
+    }
+    bite(defender){
+        this.damage = (this.power/ (this.fatigue + 2)) 
+        defender.hp = Math.floor(defender.hp - this.damage)
+        return this.damage
+    }
+    scracth(defender){
+        this.damage = (this.power / (this.fatigue))
+         defender.hp = Math.floor(defender.hp- (this.power / (this.fatigue)))
+         return this.damage
+    }
+}
+
+class swarm extends monster{
+    constructor(monTroops, hp, fatigue, power, kind, morale){
+        super(hp , fatigue, power , kind )
+        
+        this.monTroops = monTroops
+        this.morale = morale 
+        this.monsters = []
+        this.monsterNames=['gremlin',"Leviathan","Typhon","Abaddon",'Rodan']
+    }
+    assembleMonsters(){
+        for(let i = 0; i < this.monTroops; i++){
+            this.monsters.push(new monster(this.rand(10,90) +this.diffcultyFactor(this.rand(4,0)),this.rand(9, 1),this.rand(9,5),this.monsterNames[this.rand(5,0)]))
+        }
+    }
+    
+    calMon(){
+        this.power = 0
+        this.hp = 0
+        this.fatigue =0
+        for(let i = 0; i< this.monsters.length; i++){
+            this.power = (this.power + this.monsters[i].power)
+            this.hp = (this.hp + this.monsters[i].hp)
+            this.fatigue = (this.fatigue + this.monsters[i].fatigue)
+
+        }
+        if(this.hp <=0){
+            this.hp = 0
+        }
+    }
+    
+    screen(){
+        for(let i =0; i < this.monsters.length; i++){
+        if(this.monsters[i].kind === 'gremlin'){
+            this.monsters[i].hp = this.rand(4,10)
+            this.monsters[i].power = this.rand(3,1)
+        }
+        if(this.monsters[i].kind === 'Typhon'){
+            this.monsters[i].hp = this.rand(40,100)
+        }
+        if(this.monsters[i].kind === 'Leviathan'){
+            this.monsters[i].hp = this.rand(50, 300)
+        }
+        if(this.monsters[i].kind === 'Abaddon'){
+            this.monsters[i].power = this.rand(5, 20)
+        }
+        }
+    }
+    takeDamage(damage){
+        this.monsters.sort(compare)
+        this.damage = damage
+        this.monDam(damage)
+        
+    }
+    monDam(damage){
+        var monDamage = damage/ this.monsters.length
+        for(let i=0; i<this.monsters.length; i++){
+        
+            this.monsters[i].hp = Math.floor((this.monsters[i].hp - monDamage))
+           this.elimMon()
+        }
+        this.elimMon()
+    }
+    elimMon(){
+        this.monsters.sort(compare)
+        for(let i = 0; i<this.monsters.length; i++){
+            this.monsters.sort(compare)
+            if(this.monsters[i].hp <= 0){
+                this.monsters.shift()
+            }
+            this.calMon()
+            
+        }
+    }
+    //sal is short for swarm bites legion
+    sbl(lForce){
+        lForce.recieveDamage(this.bite(lForce))
+   }
+   intialize(){
+       this.assembleMonsters()
+       this.calMon()
+   }
+}
+class colony extends swarm{
+    constructor(swarms, monTroops, hp, fatigue, power, kind, morale){
+        super(monTroops, hp, fatigue, power, kind, morale)
+        this.swarms = swarms
+        this.nest = []
+        
+
+    }
+    formColony(){
+        for(let x = 0 ; x < this.swarms; x++){
+            this.nest.push(new swarm(this.rand(10,1), 0, 0, 0, '', 0))
+            this.nest[x].assembleMonsters()
+            this.calMon()
+            }
+        
+    }
+    calCHp(){
+        this.hp = 0
+        for(let i = 0; i < this.nest.length; i++){
+            this.hp = (this.hp + this.nest[i].hp)
+        }
+       
+    }
+    calCPower(){
+        for(let i = 0; i< this.nest.length; i++){
+            this.power = (this.power + this.nest[i].power)
+        }
+    }
+    elimNest(){
+        for(let i = 0; i < this.nest.length; i++){
+            if(this.nest[i].hp<= 0){
+                this.nest[i].delete()
+                this.swarms = this.swarms -1
+            }
+        }
+    }
+    nestDam(damage){
+        for(let i = 0; i<this.nest.length; i ++){
+            this.nest[i].hp = this.nest[i].hp - (damage/this.nest.length)
+        }}
+    getDamage(damage){
+        this.nestDam(damage)
+        this.elimNest()
+        for(let i=0 ; i < this.nest.length; i ++){
+            this.nest[i].takeDamage(damage)
+            this.nest[i].monDam(damage)
+            this.nest[i].elimMon()
+        }
+        this.elimNest()
+    }   
+    readyUp(){
+        this.formColony()
+        this.calCHp()
+        this.calCPower()
+    }
+    
+}
+
+
+
+
+
+function compare(mon1, mon2){
+    mon1 = mon1.hp
+    mon2 = mon2.hp
+    let comparison = 0;
+  if (mon1> mon2) {
+    comparison = 1;
+  } else if (mon1 < mon2) {
+    comparison = -1;
+  }
+  return comparison;
+}
+let img4 = new Image()
+img4.src = "monsters (1).jpg"
+let img3 = new Image()
+img3.src = "aBase1.jpg"
+let img2 = new Image();
+img2.src = "shop (2).jpg"
+let img = new Image();
+img.src = 'https://opengameart.org/sites/default/files/Green-Cap-Character-16x18.png';
+img.onload = function() {
+  window.requestAnimationFrame(gameLoop);
+};
+
+let canvas = document.querySelector('canvas');
+let ctx = canvas.getContext('2d');
+
+const SCALE = 2;
+const WIDTH = 16;
+const HEIGHT = 18;
+const SCALED_WIDTH = SCALE * WIDTH;
+const SCALED_HEIGHT = SCALE * HEIGHT;
+const SCALE2 = 2;
+const WIDTH2 = 50;
+const HEIGHT2 = 50;
+const SCALED_WIDTH2 = SCALE2 * WIDTH2;
+const SCALED_HEIGHT2 = SCALE2 * HEIGHT2;
+const SCALE3 = 1;
+const WIDTH3 = 100;
+const HEIGHT3 = 100;
+const SCALED_WIDTH3 = SCALE3 * WIDTH3;
+const SCALED_HEIGHT3 = SCALE3 * HEIGHT3;
+
+function drawFrame(frameX, frameY, canvasX, canvasY) {
+  ctx.drawImage(img,
+                frameX * WIDTH, frameY * HEIGHT, WIDTH, HEIGHT,
+                canvasX, canvasY, SCALED_WIDTH, SCALED_HEIGHT);
+  ctx.drawImage(img2,
+                frameX * WIDTH2, frameY * HEIGHT2, WIDTH2, HEIGHT2,
+                canvasX=200, canvasY=200, SCALED_WIDTH2, SCALED_HEIGHT2)
+                
+  ctx.drawImage(img2,
+                    frameX * WIDTH2, frameY * HEIGHT2, WIDTH2, HEIGHT2,
+                    canvasX=100, canvasY=200, SCALED_WIDTH2, SCALED_HEIGHT2)
+ ctx.drawImage(img3,
+                        frameX * WIDTH2, frameY * HEIGHT3, WIDTH3, HEIGHT3,
+                        canvasX=50, canvasY=0, SCALED_WIDTH3, SCALED_HEIGHT3)
+ctx.drawImage(img4,
+                            frameX * WIDTH2, frameY * HEIGHT3, WIDTH3, HEIGHT3,
+                            canvasX= 500,canvasY=500, SCALED_WIDTH3, SCALED_HEIGHT3)
+ 
+}
+
+var CYCLE_LOOP = [0, 1, 0, 2];
+let currentLoopIndex = 0;
+let frameCount = 0;
+let currentDirection = 0;
+let keyPresses = {};
+
+window.addEventListener('keydown', keyDownListener);
+function keyDownListener(event) {
+    keyPresses[event.key] = true;
+}
+
+window.addEventListener('keyup', keyUpListener);
+function keyUpListener(event) {
+    keyPresses[event.key] = false;
+}
+
+const MOVEMENT_SPEED = 2;
+let positionX = 0;
+let positionY = 0;
+
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (keyPresses.w) {
+    positionY -= MOVEMENT_SPEED;
+  } else if (keyPresses.s) {
+    positionY += MOVEMENT_SPEED;
+  }
+  if (keyPresses.a) {
+    positionX -= MOVEMENT_SPEED;
+  } else if (keyPresses.d) {
+    positionX += MOVEMENT_SPEED;
+  }
+  if(positionX > 200 & positionX<250 & positionY>200 & positionY<250){
+  enterShop()
+
+  }
+  if(positionX > 100 & positionX< 150 & positionY>200 & positionY<250){
+    enterMageShop()
+  }
+  if(positionX>50 & positionX<100 & positionY>0 & positionY<50){
+      enterCamp()
+  }
+  if(positionX>500 & positionX<600 & positionY>500 & positionY <600){
+      battleMonsters()
+  }
+  drawFrame(0, 0, positionX, positionY);
+  window.requestAnimationFrame(gameLoop);
+
+}
+var para4 = document.getElementById('para4')
+function enterMageShop(){
+  positionX = 150
+positionY = 150
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 0
+  canvas.height = 0
+
+var para = document.getElementById('para')
+var header = document.getElementById('header')
+var para2 = document.getElementById('para2')
+
+
+
+document.body.style.backgroundImage =  'url("MageShop.jpg")'
+
+buildTable(game.Armor)
+header.innerText = "Mage and Armor Shop"
+header.style.color = 'white'
+para.innerHTML = "<button id ='exit'>Exit</button>" 
+
+para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+para2.style.color = 'white'
+
+var exitBtn = document.getElementById('exit')
+
+
+function buildTable(data){;
+var table = document.getElementById('myTable');
+  table.innerText = " "
+for (var i = 0; i < data.length; i++){;
+    var row = `<tr>
+                    <td>${data[i].name}</td>
+                    <td>$${data[i].buyPrice}</td>
+                    <td><button id ='${[i]}'>Buy</button><button id ='${[(i*5)+9]}'>Sell</button></td>
+                    
+           
+                    </tr>`;
+    table.innerHTML += row;
+
+
+};
+};
+var btn = document.getElementById([0])
+var btn2 = document.getElementById([1])
+var btn3 = document.getElementById([2])
+var btn4 = document.getElementById([3])
+var btn5 = document.getElementById([4])
+var btn6 = document.getElementById([5])
+
+var btn10 = document.getElementById([9])
+var btn11 = document.getElementById([14])
+var btn12 = document.getElementById([19])
+var btn13 = document.getElementById([24])
+var btn14 = document.getElementById([29])
+var btn15 = document.getElementById([34])
+trader(justin)
+function trader(buyer){
+btn.addEventListener("click", function(){
+justin.wallet = justin.wallet - game.Armor[0].buyPrice
+if(justin.wallet>0){
+para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+
+}
+else{
+    para4.innerText = "No more Gold"
+}
+})
+btn2.addEventListener('click',function(){
+  justin.wallet = justin.wallet - game.Armor[1].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn3.addEventListener('click',function(){
+  justin.wallet = justin.wallet - game.Armor[2].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn4.addEventListener('click',function(){
+  justin.wallet = justin.wallet - game.Armor[3].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn5.addEventListener('click',function(){
+  justin.wallet = justin.wallet - game.Armor[4].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn6.addEventListener('click',function(){
+  justin.wallet = justin.wallet - game.Armor[5].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn10.addEventListener("click", function(){
+  justin.wallet = justin.wallet + game.Armor[0].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn11.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Armor[1].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn12.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Armor[2].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn13.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Armor[3].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn14.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Armor[4].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+btn15.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Armor[5].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+})
+}
+exitBtn.addEventListener('click', function(){
+  
+  
+canvas.width = 1400
+canvas.height = 900
+positionX = 150
+positionY = 150
+
+})}
+function enterShop(){
+  // how do  i get it from repeating itself and the buttons not properly working
+positionX = 150
+positionY = 150
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 0
+  canvas.height = 0
+
+var para = document.getElementById('para')
+var header = document.getElementById('header')
+var para2 = document.getElementById('para2')
+
+
+
+document.body.style.backgroundImage =  'url("weaponScreen (1).jpg")'
+
+buildTable(game.Weapons)
+header.innerText = "Weapon shop"
+header.style.color = 'white'
+para.innerHTML = "<button id ='exit'>Exit</button>" 
+
+para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+para2.style.color = 'white'
+
+var exitBtn = document.getElementById('exit')
+
+
+function buildTable(data){;
+var table = document.getElementById('myTable');
+  table.innerText = " "
+for (var i = 0; i < data.length; i++){;
+    var row = `<tr>
+                    <td>${data[i].name}</td>
+                    <td>$${data[i].buyPrice}</td>
+                    <td><button id ='${[i]}'>Buy</button><button id ='${[(i*5)+9]}'>Sell</button></td>
+                    
+           
+                    </tr>`;
+    table.innerHTML += row;
+
+
+};
+};
+var btn = document.getElementById([0])
+var btn2 = document.getElementById([1])
+var btn3 = document.getElementById([2])
+var btn4 = document.getElementById([3])
+var btn5 = document.getElementById([4])
+var btn6 = document.getElementById([5])
+var btn7 = document.getElementById([6])
+var btn10 = document.getElementById([9])
+var btn11 = document.getElementById([14])
+var btn12 = document.getElementById([19])
+var btn13 = document.getElementById([24])
+var btn14 = document.getElementById([29])
+var btn15 = document.getElementById([34])
+trader(justin)
+function trader(buyer){
+btn.addEventListener("click", function(){
+    if(justin.wallet> 0){
+ justin.wallet = justin.wallet - game.Weapons[0].buyPrice
+para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+justin.inventory.push(game.Weapons[0])
+    }
+    else{
+        para4.innerText = 'No more Gold'
+    }
+})
+btn2.addEventListener('click',function(){
+    if(justin.wallet> 0){
+    justin.wallet = justin.wallet - game.Weapons[1].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  justin.inventory.push(game.Weapons[1])
+}
+else{
+    para4.innerText = 'No more Gold'
+}
+})
+btn3.addEventListener('click',function(){
+    if(justin.wallet> 0){
+    justin.wallet = justin.wallet - game.Weapons[2].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  justin.inventory.push(game.Weapons[2])
+}
+else{
+    para4.innerText = 'No more Gold'
+}
+})
+btn4.addEventListener('click',function(){
+    if(justin.wallet> 0){
+    justin.wallet = justin.wallet - game.Weapons[3].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  justin.inventory.push(game.Weapons[3])
+}
+else{
+    para4.innerText = 'No more Gold'
+}
+})
+btn5.addEventListener('click',function(){
+    if(justin.wallet> 0){
+    justin.wallet = justin.wallet - game.Weapons[4].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  justin.inventory.push(game.Weapons[4])
+}
+else{
+    para4.innerText = 'No more Gold'
+}
+})
+btn6.addEventListener('click',function(){
+  if(justin.wallet> 0){
+  justin.wallet = justin.wallet - game.Weapons[5].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  justin.inventory.push(game.Weapons[5])
+}
+else{
+    para4.innerText = 'No more Gold'
+}
+})
+btn10.addEventListener("click", function(){
+  
+  justin.wallet = justin.wallet + game.Weapons[0].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  
+    for(let i=0; i<justin.inventory.length; i++){
+        if(justin.inventory[i].name === "Sword"){
+            
+             justin.inventory.splice(i,1)
+             i = justin.inventory.length
+        }
+    }
+
+
+})
+btn11.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Weapons[1].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  for(let i=0; i<justin.inventory.length; i++){
+    if(justin.inventory[i].name === "Axe"){
+        
+         justin.inventory.splice(i,1)
+         i = justin.inventory.length
+    }
+}
+
+})
+btn12.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Weapons[2].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  for(let i=0; i<justin.inventory.length; i++){
+    if(justin.inventory[i].name === "Bow"){
+        
+         justin.inventory.splice(i,1)
+         i = justin.inventory.length
+    }
+}
+})
+btn13.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Weapons[3].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  for(let i=0; i<justin.inventory.length; i++){
+    if(justin.inventory[i].name === "Dagger"){
+        
+         justin.inventory.splice(i,1)
+         i = justin.inventory.length
+    }
+}
+})
+btn14.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Weapons[4].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  for(let i=0; i<justin.inventory.length; i++){
+    if(justin.inventory[i].name === "Spear"){
+        
+         justin.inventory.splice(i,1)
+         i = justin.inventory.length
+    }
+}
+
+})
+btn15.addEventListener('click',function(){
+  justin.wallet = justin.wallet + game.Weapons[5].buyPrice
+  para2.innerText = "Player has " + justin.wallet + " Gold to spend"
+  for(let i=0; i<justin.inventory.length; i++){
+    if(justin.inventory[i].name === "Mace"){
+        
+         justin.inventory.splice(i,1)
+         i = justin.inventory.length
+    }
+}
+})
+}
+exitBtn.addEventListener('click', function(){
+  
+  
+canvas.width = 1400
+canvas.height = 900
+positionX = 150
+positionY = 150
+
+
+})
+}
+function enterCamp(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 0
+  canvas.height = 0
+  positionX = 10
+  positionY = 10
+
+
+var para = document.getElementById('para')
+var header = document.getElementById('header')
+var para2 = document.getElementById('para2')
+var para3 = document.getElementById('para3')
+header.style.color = "red"
+para2.style.color = "red"
+document.body.style.backgroundImage = 'url("abasebackground.jpg")'
+para.innerHTML = "<button id ='exit'>Exit</button>" 
+var exitBtn = document.getElementById('exit')
+header.innerText = 'Recruit Soldiers'
+para2.innerText = "Your Gold: " + justin.wallet +  "," +"  It cost 10 gold per soldier, how many do you want?"
+para3.innerHTML = "<input id = 'input'></input><button id = 'btn'>submit</button>"
+var input = document.getElementById('input')
+var btn = document.getElementById('btn')
+
+function buildTable(){
+    var table = document.getElementById('myTable');
+    var tb = document.getElementById('tb')
+    table.innerHTML = " "
+    
+    tb.innerHTML = `
+    <th>Name</th>
+    <th>Health</th>
+    <th>Stamina</th>
+    <th>Strenth</th>
+`
+
+
+
+    for (var i = 0; i < playerLegion.platoon.length; i++){;
+        var row = `<tr>
+                        <td>${playerLegion.platoon[i].name}</td>
+                        <td>${playerLegion.platoon[i].hp}</td>
+                        <td>${playerLegion.platoon[i].sta}</td>
+                        <td>${playerLegion.platoon[i].str}</td>
+               
+                        </tr>`
+        table.innerHTML += row;
+    }
+
+}
+function buildMonTable(){
+    var montable = document.getElementById('monTable');
+    var mtb = document.getElementById('mtb')
+    montable.innerHTML = " "
+    
+    mtb.innerHTML = `
+    <th>Name</th>
+    <th>Health</th>
+    <th>fatigue/th>
+    <th>Power</th>
+`
+
+
+
+    for (var i = 0; i < hive1.monsters.length; i++){;
+        var row = `<tr>
+                        <td>${hive1.monsters[i].kind}</td>
+                        <td>${hive1.monsters[i].hp}</td>
+                        <td>${hive1.monsters[i].fatigue}</td>
+                        <td>${hive1.monsters[i].power}</td>
+               
+                        </tr>`
+        montable.innerHTML += row;
+    }
+
+}
+btn.addEventListener('click', function(){
+   
+    playerLegion = new legion(input.value)
+    playerLegion.assembleArmy()
+    justin.wallet = justin.wallet - (10 * input.value)
+    para2.innerText = "Your Gold: " + justin.wallet +  "," +"  It cost 10 gold per soldier, how many do you want?"
+    buildTable()
+    
+})
+
+
+
+
+exitBtn.addEventListener('click', function(){
+  
+
+  para3.innerHTML = " "
+    canvas.width = 1200
+    canvas.height = 900
+    positionX = 10
+    positionY = 10
+   
+    })
+}
+function battleMonsters(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = 0
+    canvas.height = 0
+    positionX = 450
+    positionY = 450
+
+
+var para = document.getElementById('para')
+var header = document.getElementById('header')
+var para2 = document.getElementById('para2')
+var para3 = document.getElementById('para3')
+document.body.style.backgroundImage = 'url("monstertown.jpg")'
+header.style.color = 'white'
+header.innerText = 'Monster Town'
+para2.style.color = 'white'
+para2.innerText = "You've just entered monster town, let's hope your ready to fight."
+para3.innerHTML = "<button id = 'mbtn'>fight monsters</button>"
+para4.innerHTML ="<button id = 'rbtn'>Run</button>"
+var mbtn = document.getElementById('mbtn')
+var rbtn = document.getElementById('rbtn')
+
+rbtn.addEventListener('click',function(){
+    canvas.width = 1200
+    canvas.height = 900
+    positionX = 450
+    positionY = 450
+
+})
+mbtn.addEventListener('click', function(){
+    hive1 = new swarm(swarm.rand(10,1))
+    hive1.assembleMonsters()
+    buildMonTable()
+    buildTable()
+
+})
+
+
+}
